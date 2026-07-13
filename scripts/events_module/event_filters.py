@@ -499,8 +499,10 @@ def _check_cat_status(cat, statuses: list) -> bool:
     if not statuses or "any" in statuses:
         return True
 
-    if (cat.status.rank in statuses) or (
-        "clancat" in statuses and cat.status.is_clancat
+    if (
+        (cat.status.rank in statuses)
+        or ("clancat" in statuses and cat.status.is_clancat)
+        or ("lost" in statuses and cat.status.is_lost())
     ):
         return True
 
@@ -509,8 +511,10 @@ def _check_cat_status(cat, statuses: list) -> bool:
     if is_exclusionary:
         statuses = [x.replace("-", "") for x in statuses]
 
-    if (cat.status.rank in statuses) or (
-        "clancat" in statuses and cat.status.is_clancat
+    if (
+        (cat.status.rank in statuses)
+        or ("clancat" in statuses and cat.status.is_clancat)
+        or ("lost" in statuses and cat.status.is_lost())
     ):
         return False
 
@@ -723,15 +727,15 @@ def _check_cat_standing(
     # CURRENT STANDINGS
     for tag in current_standings:
         if tag == CatStanding.LEFT:
-            if cat.status.has_left(CatGroup.PLAYER_CLAN):
+            if _has_current_standing(cat, tag, groups, other_clan_id):
                 qualifies = True
                 break
         elif tag == CatStanding.LOST:
-            if cat.status.is_lost(CatGroup.PLAYER_CLAN):
+            if _has_current_standing(cat, tag, groups, other_clan_id):
                 qualifies = True
                 break
         elif tag == CatStanding.EXILED:
-            if cat.status.is_exiled(CatGroup.PLAYER_CLAN):
+            if _has_current_standing(cat, tag, groups, other_clan_id):
                 qualifies = True
                 break
 
